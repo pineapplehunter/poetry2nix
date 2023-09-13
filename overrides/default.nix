@@ -1689,6 +1689,8 @@ lib.composeManyExtensions [
       pandas = super.pandas.overridePythonAttrs (old: {
 
         buildInputs = old.buildInputs or [ ] ++ lib.optional stdenv.isDarwin pkgs.libcxx;
+        nativeBuildInputs = (old.nativeBuildInputs or [ ])
+          ++ lib.optionals (lib.versionAtLeast old.version "2.1.0") [ self.meson-python pkg-config ];
 
         # Doesn't work with -Werror,-Wunused-command-line-argument
         # https://github.com/NixOS/nixpkgs/issues/39687
@@ -1704,8 +1706,8 @@ lib.composeManyExtensions [
                       "['pandas/src/klib', 'pandas/src', '$cpp_sdk']"
         '';
 
-
         enableParallelBuilding = true;
+        dontUseMesonConfigure = true;
       });
 
       pantalaimon = super.pantalaimon.overridePythonAttrs (old: {
